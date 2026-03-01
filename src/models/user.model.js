@@ -2,7 +2,10 @@ const mongoose = require("mongoose")
 
 const userShema = new mongoose.Schema({
     name: String,
-    email: String,
+    email: {
+        type: String,
+        unique: [true, "with thise someone is already login"]
+    },
     password:String,
     gender: String,
     age:Number,
