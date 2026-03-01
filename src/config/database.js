@@ -1,15 +1,13 @@
-const  mongoose  = require("mongoose");
- 
+const mongoose = require("mongoose");
 
-    const connect  = async () => {
-    const res = await mongoose.connect(process.env.MONGO_URL)
-
-    if (!res) {
-        console.log("db not conneted");
-    }
-    
-    console.log("db  conneted");
-
+const Dbconnect = async () => {
+  try {
+    await mongoose.connect(process.env.MONGO_URL);
+    console.log("✅ DB Connected Successfully");
+  } catch (error) {
+    console.error("❌ DB Connection Failed:");
+    console.error(error.message);
+    process.exit(1); // stop app if DB fails
   }
-
-  module.exports = connect 
+};
+module.exports = Dbconnect;
