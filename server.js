@@ -1,13 +1,10 @@
 require('dotenv').config()
 const app = require("./src/app")
-// const dns = require("dns")
-const Dbconnect =  require("./src/config/database")
+const Dbconnect = require("./src/config/database")
+
 const port = 3000
-Dbconnect()
 
-
-
-// dns.setServers(["1.1.1.1","8.8.8.8"])
+Dbconnect()   // database connection runs here
 
 app.get('/', (req, res) => {
   res.send('Hello World!')
