@@ -103,3 +103,60 @@ exports.login = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+// POST /api/user/address
+exports.address = async (req, res) => {
+  try {
+
+    const { street, city, state, country, zipCode } = req.body;
+
+    const user = await userModel.findById(req.user.id);
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found"
+      });
+    }
+
+    user.address.push({
+      street,
+      city,
+      state,
+      country,
+      zipCode
+    });
+
+    await user.save();
+
+    res.json({
+      success: true,
+      message: "Address added successfully",
+      address: user.address
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
+  }
+};
+
+
+// delet user admin only /delete-user/:id
+
+exports.deleteUser = async (req, res) => {
+ try {
+  const {id} = req.params
+    const user = await userModel.findByIdAndDelete(id);
+
+    if (!user) {
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
+
+    res.json({ success: true, message: "User deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+}
