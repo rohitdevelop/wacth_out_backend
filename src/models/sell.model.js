@@ -30,10 +30,10 @@ const addressSchema = new mongoose.Schema({
 });
 
 const watchSchema = new mongoose.Schema({
-  // image: {
-  //   type: String,
-  //   required: true,
-  // },
+  image: {
+    type: String,
+    required: true,
+  },
   brand: {
     type: String,
     required: true,
@@ -52,6 +52,10 @@ const watchSchema = new mongoose.Schema({
 
 const sellerSchema = new mongoose.Schema(
   {
+    avtar: {
+      type: String,
+      required: false,
+    },
     name: {
       type: String,
       required: true,
