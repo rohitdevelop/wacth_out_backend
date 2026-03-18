@@ -8,36 +8,15 @@ const imageKit = new Imagekit({
 
 exports.sellWatches = async (req, res) => {
   try {
-    const token = req.cookies.jwt_token;
-
-    if (!token) {
-      return res.status(401).json({
-        message: "Unauthorized: Token not provided",
-      });
-    }
-
-    let decode = null;
-    try {
-      decode = jwt.verify(token, process.env.JWT_SECRET);
-    } catch (error) {
-      return res.status(401).json({
-        message: "Invalid or expired token",
-      });
-    }
-
-    const allWatches = await sellerModel.find({ user: decode.id });
+    const allWatches = await sellerModel.find({ user: req.user.id });
 
     if (!allWatches || allWatches.length === 0) {
       return res.status(404).json({
         message: "No watches found for this user",
       });
     }
-
-    if (!allWatches) {
-      res.status(401).json({ message: "all wacthn not" }, allWatches);
-    }
-
-    res.status(201).json({ message: "all wacthc done", allWatches });
+ 
+    res.status(200).json({ message: "all wacthc done", allWatches });
   } catch (error) {
     res.status(500).json({ message: "server serror", error });
   }
@@ -46,22 +25,6 @@ exports.sellWatches = async (req, res) => {
 exports.createSeller = async (req, res) => {
   try {
     const { name, phone, address, watchDetails } = req.body;
-
-    const token = req.cookies.jwt_token;
-
-    if (!token) {
-      return res
-        .status(401)
-        .json({ message: "Token not Provided, Unauthrized acess" });
-    }
-    let decode = null;
-    try {
-      decode = jwt.verify(token, process.env.JWT_SECRET);
-    } catch (error) {
-      return res.status(401).json({
-        message: "Invalid or expired token",
-      });
-    }
 
     //  Upload image
     const result = await imageKit.files.upload({
@@ -104,7 +67,7 @@ exports.createSeller = async (req, res) => {
       phone,
       address: parsedAddress,
       watchDetails: parsedWatch,
-      user: decode.id,
+      user: req.user.id,
     });
 
     res.status(201).json({
