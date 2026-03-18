@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const UserModel = require("./user.model");
 
 const addressSchema = new mongoose.Schema({
   street: {
@@ -66,7 +67,13 @@ const sellerSchema = new mongoose.Schema(
     },
     address: [addressSchema],
     watchDetails: [watchSchema],
+    user: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: UserModel,
+      required: [true, "user id is required for selling a watch"],
+    },
   },
+
   {
     timestamps: true,
   },
