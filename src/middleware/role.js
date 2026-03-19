@@ -1,21 +1,22 @@
-// // middleware/role.js
-// const roleCheck = (allowedRoles) => {
-//   return (req, res, next) => {
-//     try {
-//       const userRole = req.user.role; // req.user set hota JWT middleware se
+// middleware/role.js
+const roleCheck = (...allowedRoles) => {
+  return (req, res, next) => {
+    try {
+      const userRole = req.user.role; 
 
-//       if (!allowedRoles.includes(userRole)) {
-//         return res.status(403).json({
-//           success: false,
-//           message: `Access denied. Required role: ${allowedRoles.join(", ")}`
-//         });
-//       }
+      if (!allowedRoles.includes(userRole)) {
+        return res.status(403).json({
+          success: false,
+          message: `Access denied. Required role: ${allowedRoles.join(", ")}`
+        });
+      }
 
-//       next();
-//     } catch (error) {
-//       res.status(500).json({ success: false, message: error.message });
-//     }
-//   };
-// };
+      next();
+    } catch (error) {
+      res.status(500).json({ success: false, message: error.message });
+    }
+  };
+};
 
-// module.exports = roleCheck;
+module.exports = roleCheck;
+ 

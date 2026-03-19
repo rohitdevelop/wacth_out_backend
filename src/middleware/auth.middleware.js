@@ -67,4 +67,35 @@ const authseller = (req, res, next) => {
   }
 };
 
-module.exports = authaddress, authseller;
+const verifyToken = (req, res,next) =>{
+ try {
+
+ const token = req.cookies.jwt_token;
+  
+       if (!token) {
+      return res.status(401).json({
+        message: "Unauthorized: Token not provided",
+      });
+    }
+    let decode = null;
+    try {
+      decode = jwt.verify(token, process.env.JWT_SECRET);
+    } catch (error) {
+      return res.status(401).json({
+        message: "Invalid or expired token",
+      });
+    }
+ 
+    req.user = decode;
+
+    next();
+
+  } catch (error) {
+    return res.status(401).json({
+      success: false,
+      message: "Invalid token"
+    });
+  }
+}
+
+module.exports = authaddress, authseller,verifyToken;
