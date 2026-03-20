@@ -5,13 +5,12 @@ const jwt = require("jsonwebtoken");
 // all users get method
 exports.users = async (req, res) => {
   try {
-
     const users = await userModel.find();
 
     if (users.length === 0) {
       return res.status(404).json({
         success: false,
-        message: "No users found"
+        message: "No users found",
       });
     }
 
@@ -19,14 +18,13 @@ exports.users = async (req, res) => {
       success: true,
       message: "Users fetched successfully",
       count: users.length,
-      users
+      users,
     });
-
   } catch (error) {
     res.status(500).json({
       success: false,
       message: "Server Error",
-      error: error.message
+      error: error.message,
     });
   }
 };
@@ -37,7 +35,7 @@ exports.signup = async (req, res) => {
     const { name, email, password, age, gender } = req.body;
 
     const exist = await userModel.findOne({ email });
-    
+
     if (exist) {
       return res.status(400).json({ message: "User already exists" });
     }
@@ -55,7 +53,7 @@ exports.signup = async (req, res) => {
     const token = jwt.sign(
       { id: user._id, email: user.email },
       process.env.JWT_SECRET,
-      { expiresIn: "1d" }
+      { expiresIn: "1d" },
     );
 
     res.cookie("jwt_token", token, { httpOnly: true });
@@ -63,8 +61,11 @@ exports.signup = async (req, res) => {
     res.status(201).json({
       message: "Signup successful",
       token,
+      user: {
+        name: user.name,
+        email: user.email,
+      },
     });
-
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -88,7 +89,7 @@ exports.login = async (req, res) => {
     const token = jwt.sign(
       { id: user._id, email: user.email },
       process.env.JWT_SECRET,
-      { expiresIn: "1d" }
+      { expiresIn: "1d" },
     );
 
     res.cookie("jwt_token", token, { httpOnly: true });
@@ -98,7 +99,6 @@ exports.login = async (req, res) => {
       token,
       user: { name: user.name, email: user.email },
     });
-
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -107,7 +107,6 @@ exports.login = async (req, res) => {
 // POST /api/user/address
 exports.address = async (req, res) => {
   try {
-
     const { street, city, state, country, zipCode } = req.body;
 
     const user = await userModel.findById(req.user.id);
@@ -115,7 +114,7 @@ exports.address = async (req, res) => {
     if (!user) {
       return res.status(404).json({
         success: false,
-        message: "User not found"
+        message: "User not found",
       });
     }
 
@@ -124,7 +123,7 @@ exports.address = async (req, res) => {
       city,
       state,
       country,
-      zipCode
+      zipCode,
     });
 
     await user.save();
@@ -132,31 +131,48 @@ exports.address = async (req, res) => {
     res.json({
       success: true,
       message: "Address added successfully",
-      address: user.address
+      address: user.address,
     });
-
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: error.message
+      message: error.message,
     });
   }
 };
 
+// logout user
+
+exports.logoutuser = async (req, res) => {
+  try {
+    res.clearCookie("jwt_token", {
+      httpOnly: true,
+      secure: true,
+      sameSite: "strict",
+       path: "/"
+    });
+
+    res.status(201).json({ message: "Logged out successfully" });
+  } catch (error) {
+    res.status(500).json({ message: "cant Logged" });
+  }
+};
 
 // delet user admin only /delete-user/:id
 
 exports.deleteUser = async (req, res) => {
- try {
-  const {id} = req.params
+  try {
+    const { id } = req.params;
     const user = await userModel.findByIdAndDelete(id);
 
     if (!user) {
-      return res.status(404).json({ success: false, message: "User not found" });
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found" });
     }
 
     res.json({ success: true, message: "User deleted successfully" });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
-}
+};
