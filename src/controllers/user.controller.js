@@ -142,7 +142,6 @@ exports.address = async (req, res) => {
 };
 
 // logout user
-
 exports.logoutuser = async (req, res) => {
   try {
     res.clearCookie("jwt_token", {
@@ -159,7 +158,6 @@ exports.logoutuser = async (req, res) => {
 };
 
 // delet user admin only /delete-user/:id
-
 exports.deleteUser = async (req, res) => {
   try {
     const { id } = req.params;

@@ -1,8 +1,7 @@
 const sellerModel = require("../models/sell.model");
 const Imagekit = require("@imagekit/nodejs");
 const { toFile } = require("@imagekit/nodejs");
-const jwt = require("jsonwebtoken");
-const imageKit = new Imagekit({
+ const imageKit = new Imagekit({
   privateKey: process.env.IMAGEKIT_PRIVATE_KEY,
 });
 
@@ -75,8 +74,7 @@ exports.createSeller = async (req, res) => {
       seller,
     });
   } catch (error) {
-    console.log(error);
-    res.status(500).json({
+     res.status(500).json({
       message: "Server error",
       error: error.message,
     });

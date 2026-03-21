@@ -69,7 +69,7 @@ const sellerSchema = new mongoose.Schema(
     watchDetails: [watchSchema],
     user: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: UserModel,
+      ref: "User",
       required: [true, "user id is required for selling a watch"],
     },
   },

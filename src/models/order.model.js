@@ -4,7 +4,7 @@ const orderSchema = new mongoose.Schema(
   {
     user: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "UserModel",
+      ref: "User",
       required: true,
     },
 
@@ -12,13 +12,13 @@ const orderSchema = new mongoose.Schema(
       {
         product: {
           type: mongoose.Schema.Types.ObjectId,
-          ref: "ProductModel",
+          ref: "Product",
           required: true,
         },
 
-        name: String,        
-        price: Number,        
-        image: String,       
+        name: String,
+        price: Number,
+        image: String,
 
         quantity: {
           type: Number,
@@ -28,8 +28,29 @@ const orderSchema = new mongoose.Schema(
       },
     ],
 
-    shippingAddress: { ...user.address[0] },
-   
+    shippingAddress: {
+      street: {
+        type: String,
+        trim: true,
+      },
+      city: {
+        type: String,
+        trim: true,
+      },
+      state: {
+        type: String,
+        trim: true,
+      },
+      country: {
+        type: String,
+        trim: true,
+        default: "India",
+      },
+      zipCode: {
+        type: String,
+        trim: true,
+      },
+    },
 
     paymentMethod: {
       type: String,
@@ -61,7 +82,7 @@ const orderSchema = new mongoose.Schema(
 
     deliveredAt: Date,
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 const Order = mongoose.model("Order", orderSchema);

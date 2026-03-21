@@ -27,7 +27,7 @@ const productSchema = new mongoose.Schema(
     category: {
       type: String,
       required: true,
-      enum: ["men", "women", "kid", "sports"], // ✅ strings hona chahiye
+      enum: ["men", "women", "kid", "sports"], //  strings hona chahiye
     },
 
     rating: {

@@ -1,5 +1,5 @@
 // middleware/role.js
-const roleCheck = (...allowedRoles) => {
+const role = (...allowedRoles) => {
   return (req, res, next) => {
     try {
       const userRole = req.user.role; 
@@ -18,5 +18,5 @@ const roleCheck = (...allowedRoles) => {
   };
 };
 
-module.exports = roleCheck;
+module.exports = role;
  
