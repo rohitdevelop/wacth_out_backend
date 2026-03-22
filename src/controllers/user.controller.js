@@ -1,6 +1,7 @@
 const userModel = require("../models/user.model");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const blacklist = require("../models/blacklist.model");
 
 // all users get method
 exports.users = async (req, res) => {
@@ -144,11 +145,16 @@ exports.address = async (req, res) => {
 // logout user
 exports.logoutuser = async (req, res) => {
   try {
+    const token = req.cookies.jwt_token;
+
+    await blacklist.create({
+      token,
+    });
     res.clearCookie("jwt_token", {
       httpOnly: true,
       secure: true,
       sameSite: "strict",
-       path: "/"
+      path: "/",
     });
 
     res.status(201).json({ message: "Logged out successfully" });
