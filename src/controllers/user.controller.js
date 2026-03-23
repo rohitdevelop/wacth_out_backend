@@ -1,14 +1,20 @@
 const userModel = require("../models/user.model");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const blacklist = require("../models/blacklist.model");
+const redis = require("../config/cache");
+const crypto = require("crypto");
 
-// all users get method
+// 🔹 helper: hash token for Redis
+const hashToken = (token) => {
+  return crypto.createHash("sha256").update(token).digest("hex");
+};
+
+// 🔹 GET ALL USERS
 exports.users = async (req, res) => {
   try {
-    const users = await userModel.find();
+    const users = await userModel.find().lean();
 
-    if (users.length === 0) {
+    if (!users.length) {
       return res.status(404).json({
         success: false,
         message: "No users found",
@@ -17,26 +23,20 @@ exports.users = async (req, res) => {
 
     res.status(200).json({
       success: true,
-      message: "Users fetched successfully",
       count: users.length,
       users,
     });
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: "Server Error",
-      error: error.message,
-    });
+    res.status(500).json({ success: false, message: error.message });
   }
 };
 
-// singup post method
+// 🔹 SIGNUP
 exports.signup = async (req, res) => {
   try {
     const { name, email, password, age, gender } = req.body;
 
     const exist = await userModel.findOne({ email });
-
     if (exist) {
       return res.status(400).json({ message: "User already exists" });
     }
@@ -51,28 +51,28 @@ exports.signup = async (req, res) => {
       gender,
     });
 
-    const token = jwt.sign(
-      { id: user._id, email: user.email },
+     const token = jwt.sign(
+      { id: user._id },
       process.env.JWT_SECRET,
-      { expiresIn: "1d" },
+      { expiresIn: "1d" }
     );
 
-    res.cookie("jwt_token", token, { httpOnly: true });
+    res.cookie("jwt_token", token, {
+      httpOnly: true,
+      secure: false,  
+      sameSite: "lax",
+    });
 
     res.status(201).json({
       message: "Signup successful",
-      token,
-      user: {
-        name: user.name,
-        email: user.email,
-      },
+      user: { name: user.name, email: user.email },
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 
-// login post method
+// 🔹 LOGIN
 exports.login = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -88,16 +88,19 @@ exports.login = async (req, res) => {
     }
 
     const token = jwt.sign(
-      { id: user._id, email: user.email },
+      { id: user._id },
       process.env.JWT_SECRET,
-      { expiresIn: "1d" },
+      { expiresIn: "1d" }
     );
 
-    res.cookie("jwt_token", token, { httpOnly: true });
+    res.cookie("jwt_token", token, {
+      httpOnly: true,
+      secure: false,
+      sameSite: "lax",
+    });
 
     res.json({
       message: "Login successful",
-      token,
       user: { name: user.name, email: user.email },
     });
   } catch (error) {
@@ -105,7 +108,7 @@ exports.login = async (req, res) => {
   }
 };
 
-// POST /api/user/address
+// 🔹 ADD ADDRESS
 exports.address = async (req, res) => {
   try {
     const { street, city, state, country, zipCode } = req.body;
@@ -113,19 +116,10 @@ exports.address = async (req, res) => {
     const user = await userModel.findById(req.user.id);
 
     if (!user) {
-      return res.status(404).json({
-        success: false,
-        message: "User not found",
-      });
+      return res.status(404).json({ message: "User not found" });
     }
 
-    user.address.push({
-      street,
-      city,
-      state,
-      country,
-      zipCode,
-    });
+    user.address.push({ street, city, state, country, zipCode });
 
     await user.save();
 
@@ -135,48 +129,51 @@ exports.address = async (req, res) => {
       address: user.address,
     });
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: error.message,
-    });
+    res.status(500).json({ message: error.message });
   }
 };
 
-// logout user
+// 🔹 LOGOUT
 exports.logoutuser = async (req, res) => {
   try {
-    const token = req.cookies.jwt_token;
+    const token = req.cookies?.jwt_token;
 
-    await blacklist.create({
-      token,
-    });
+    if (!token) {
+      return res.status(400).json({ message: "No token found" });
+    }
+
+    // ✅ Hash token (better)
+    const hashedToken = hashToken(token);
+
+    // ✅ Store in Redis with expiry
+    await redis.set(hashedToken, "blacklisted", "EX", 60 * 60 * 24);
+
     res.clearCookie("jwt_token", {
       httpOnly: true,
-      secure: true,
-      sameSite: "strict",
+      secure: false,
+      sameSite: "lax",
       path: "/",
     });
 
-    res.status(201).json({ message: "Logged out successfully" });
+    res.status(200).json({ message: "Logged out successfully" });
   } catch (error) {
-    res.status(500).json({ message: "cant Logged" });
+    res.status(500).json({ message: "Logout failed", error });
   }
 };
 
-// delet user admin only /delete-user/:id
+// 🔹 DELETE USER
 exports.deleteUser = async (req, res) => {
   try {
     const { id } = req.params;
+
     const user = await userModel.findByIdAndDelete(id);
 
     if (!user) {
-      return res
-        .status(404)
-        .json({ success: false, message: "User not found" });
+      return res.status(404).json({ message: "User not found" });
     }
 
-    res.json({ success: true, message: "User deleted successfully" });
+    res.json({ message: "User deleted successfully" });
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    res.status(500).json({ message: error.message });
   }
 };
