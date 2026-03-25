@@ -108,8 +108,7 @@ const redis = require("../config/cache");
 const authMiddleware = async (req, res, next) => {
   try {
     let token = null;
-
-    // 1️⃣ Get token from Header
+     // 1️⃣ Get token from Header
     if (req.headers.authorization) {
       token = req.headers.authorization.split(" ")[1];
     }

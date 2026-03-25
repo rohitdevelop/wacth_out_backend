@@ -42,6 +42,12 @@ exports.signup = async (req, res) => {
     }
 
     const hashpassword = await bcrypt.hash(password, 10);
+ 
+    let role = "user";
+
+    if (email === "admin@gmail.com") {
+      role = "admin";
+    }
 
     const user = await userModel.create({
       name,
@@ -49,29 +55,33 @@ exports.signup = async (req, res) => {
       password: hashpassword,
       age,
       gender,
+      role, 
     });
 
-     const token = jwt.sign(
-      { id: user._id },
+    const token = jwt.sign(
+      { id: user._id, role: user.role }, // ✅ role add
       process.env.JWT_SECRET,
       { expiresIn: "1d" }
     );
 
     res.cookie("jwt_token", token, {
       httpOnly: true,
-      secure: false,  
+      secure: false,
       sameSite: "lax",
     });
 
     res.status(201).json({
       message: "Signup successful",
-      user: { name: user.name, email: user.email },
+      user: {
+        name: user.name,
+        email: user.email,
+        role: user.role,
+      },
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
-
 // 🔹 LOGIN
 exports.login = async (req, res) => {
   try {
@@ -87,11 +97,9 @@ exports.login = async (req, res) => {
       return res.status(400).json({ message: "Incorrect password" });
     }
 
-    const token = jwt.sign(
-      { id: user._id },
-      process.env.JWT_SECRET,
-      { expiresIn: "1d" }
-    );
+    const token = jwt.sign({ id: user._id , role: user.role}, process.env.JWT_SECRET, {
+      expiresIn: "1d",
+    });
 
     res.cookie("jwt_token", token, {
       httpOnly: true,
@@ -101,7 +109,7 @@ exports.login = async (req, res) => {
 
     res.json({
       message: "Login successful",
-      user: { name: user.name, email: user.email },
+      user: { name: user.name, email: user.email ,role: user.role},
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
