@@ -8,10 +8,15 @@ const cookieParser = require("cookie-parser")
 
 const app = express() // 
 const cors = require("cors");
+const FRONTEND_URL =
+  process.env.NODE_ENV === "development"
+    ? "http://localhost:3000"
+    : "https://wacth-out.vercel.app";
+
 app.use(
   cors({
-    origin: "http://localhost:3000",  
-    credentials: true, //  cookie ke liye important
+    origin: FRONTEND_URL,
+    credentials: true, // allow cookies
   })
 );
 
