@@ -59,7 +59,7 @@ exports.signup = async (req, res) => {
     });
 
     const token = jwt.sign(
-      { id: user._id, role: user.role }, // ✅ role add
+      { id: user._id, role: user.role }, 
       process.env.JWT_SECRET,
       { expiresIn: "1d" }
     );
@@ -184,4 +184,11 @@ exports.deleteUser = async (req, res) => {
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
+};
+
+
+exports.getMe = (req, res) => {
+  res.json({
+    user: req.user,
+  });
 };
