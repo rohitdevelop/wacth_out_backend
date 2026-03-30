@@ -7,6 +7,8 @@ const upload = multer({ storage: multer.memoryStorage() });
 const {
   createproduct,
   allproducts,
+  deleteproducts,
+  Editproducts
 } = require("../controllers/product.controller");
 const authMiddleware = require("../middleware/auth.middleware");
 const role = require("../middleware/role.middleware");
@@ -17,6 +19,18 @@ ProductRouter.post(
   authMiddleware,
   role("admin"),
   createproduct,
+);
+ProductRouter.delete(
+  "/deleteproducts/:id",
+   authMiddleware,
+  role("admin"),
+  deleteproducts,
+);
+ProductRouter.patch(
+  "/Editproducts/:id",
+   authMiddleware,
+  role("admin"),
+  Editproducts,
 );
 ProductRouter.get("/allproducts", allproducts);
 

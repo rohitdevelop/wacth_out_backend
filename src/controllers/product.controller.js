@@ -11,7 +11,9 @@ exports.createproduct = async (req, res) => {
 
     // Check if images are uploaded
     if (!req.files || req.files.length === 0) {
-      return res.status(400).json({ message: "At least one image is required" });
+      return res
+        .status(400)
+        .json({ message: "At least one image is required" });
     }
 
     const imageUrls = [];
@@ -47,6 +49,7 @@ exports.createproduct = async (req, res) => {
     });
   }
 };
+
 exports.allproducts = async (req, res) => {
   try {
     const ourproducts = await productModel.find();
@@ -60,5 +63,47 @@ exports.allproducts = async (req, res) => {
     res.status(200).json({ message: "all products done", ourproducts });
   } catch (error) {
     res.status(500).json({ message: "server serror", error });
+  }
+};
+
+exports.deleteproducts = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const productdelete = await productModel.findByIdAndDelete(id);
+
+    if (!productdelete) {
+      return res.status(404).json({ message: "Product not found" });
+    }
+
+    res.status(200).json({ message: "Product deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error });
+  }
+};
+
+exports.Editproducts = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const productedit = await productModel.findByIdAndUpdate(
+      id,
+      req.body, // ⭐ important
+      {
+        new: true,           // return updated data
+        runValidators: true, // apply schema validation
+      }
+    );
+
+    if (!productedit) {
+      return res.status(404).json({ message: "Product not found" });
+    }
+
+    res.status(200).json({
+      message: "Product updated successfully",
+      data: productedit,
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error });
   }
 };
