@@ -18,7 +18,7 @@ const { body } = require( "express-validator");
    body("password")
     .trim()
     .notEmpty().withMessage("Password is required")
-    .isLength({ min: 6, max: 8 }).withMessage("Password must be 6-8 characters")
+   .isLength({ min: 6, max: 8 }).withMessage("Password must be 6-8 chars, include A-Z, a-z, number & special char")
     .matches(/[A-Z]/).withMessage("Must contain at least 1 uppercase letter")
     .matches(/[a-z]/).withMessage("Must contain at least 1 lowercase letter")
     .matches(/[0-9]/).withMessage("Must contain at least 1 number")
