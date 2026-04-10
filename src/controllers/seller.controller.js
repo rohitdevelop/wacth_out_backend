@@ -31,23 +31,21 @@ exports.createSeller = async (req, res) => {
       fileName: req.file.originalname,
       folder: "seller-watches",
     });
-
-    const imageUrl = result.url;
+     const imageUrl = result.url;
 
     let parsedWatch = [];
     let parsedAddress = [];
-
     if (watchDetails) {
       parsedWatch =
-        typeof watchDetails === "string"
-          ? JSON.parse(watchDetails)
-          : watchDetails;
+      typeof watchDetails === "string"
+      ? JSON.parse(watchDetails)
+      : watchDetails;
     }
     if (address) {
       parsedAddress =
-        typeof address === "string" ? JSON.parse(address) : address;
+      typeof address === "string" ? JSON.parse(address) : address;
     }
-
+    
     if (!parsedWatch || parsedWatch.length === 0) {
       return res.status(400).json({
         message: "watchDetails is required",
@@ -58,9 +56,10 @@ exports.createSeller = async (req, res) => {
         message: "parsedAddress is required",
       });
     }
-
+    console.log("watchDetails:", watchDetails);
+    
     parsedWatch[0].image = imageUrl;
-
+    
     const seller = await sellerModel.create({
       name,
       phone,
@@ -68,7 +67,7 @@ exports.createSeller = async (req, res) => {
       watchDetails: parsedWatch,
       user: req.user.id,
     });
-
+    
     res.status(201).json({
       message: "Seller created successfully",
       seller,

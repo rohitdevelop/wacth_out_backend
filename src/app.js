@@ -15,7 +15,7 @@ const FRONTEND_URL =
 
 app.use(
   cors({
-    origin: FRONTEND_URL,
+    origin: "http://localhost:3000",
     credentials: true, // allow cookies
   })
 );

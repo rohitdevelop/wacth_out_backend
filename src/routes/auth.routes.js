@@ -18,7 +18,6 @@ const validate = require("../middleware/validator.middleware");
 
 authRouter.post("/signup", registerValidation, validate, signup);
 authRouter.post("/login", login);
-authRouter.get("/users", users);
 authRouter.get("/me", authMiddleware, getMe);
 authRouter.post("/address", authMiddleware, address);
 authRouter.post("/logoutuser", logoutuser);
@@ -30,5 +29,7 @@ authRouter.delete(
   role("admin"),
   deleteUser,
 );
+
+authRouter.get("/users", users);
 
 module.exports = authRouter;
