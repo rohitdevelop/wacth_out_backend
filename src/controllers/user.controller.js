@@ -67,7 +67,7 @@ exports.signup = async (req, res) => {
     res.cookie("jwt_token", token, {
       httpOnly: true,
       secure: false,
-      sameSite: "lax",
+      sameSite: "none",
     });
 
     res.status(201).json({
@@ -104,7 +104,7 @@ exports.login = async (req, res) => {
     res.cookie("jwt_token", token, {
       httpOnly: true,
       secure: false,
-      sameSite: "lax",
+      sameSite: "none",
     });
 
     res.json({
@@ -159,7 +159,7 @@ exports.logoutuser = async (req, res) => {
     res.clearCookie("jwt_token", {
       httpOnly: true,
       secure: false,
-      sameSite: "lax",
+      sameSite: "none",
       path: "/",
     });
 
