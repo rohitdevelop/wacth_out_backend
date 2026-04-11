@@ -1,5 +1,6 @@
 require('dotenv').config()
 const app = require("./src/app")
+app.set("trust proxy", 1);
 const Dbconnect = require("./src/config/database")
 
 const port = 8000

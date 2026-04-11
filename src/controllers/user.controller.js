@@ -42,7 +42,7 @@ exports.signup = async (req, res) => {
     }
 
     const hashpassword = await bcrypt.hash(password, 10);
- 
+
     let role = "user";
 
     if (email === "admin@gmail.com") {
@@ -55,18 +55,18 @@ exports.signup = async (req, res) => {
       password: hashpassword,
       age,
       gender,
-      role, 
+      role,
     });
 
     const token = jwt.sign(
-      { id: user._id, role: user.role }, 
+      { id: user._id, role: user.role },
       process.env.JWT_SECRET,
-      { expiresIn: "1d" }
+      { expiresIn: "1d" },
     );
 
     res.cookie("jwt_token", token, {
       httpOnly: true,
-      secure: false,
+      secure: true,
       sameSite: "none",
     });
 
@@ -97,19 +97,23 @@ exports.login = async (req, res) => {
       return res.status(400).json({ message: "Incorrect password" });
     }
 
-    const token = jwt.sign({ id: user._id , role: user.role}, process.env.JWT_SECRET, {
-      expiresIn: "1d",
-    });
+    const token = jwt.sign(
+      { id: user._id, role: user.role },
+      process.env.JWT_SECRET,
+      {
+        expiresIn: "1d",
+      },
+    );
 
     res.cookie("jwt_token", token, {
       httpOnly: true,
-      secure: false,
+      secure: true,
       sameSite: "none",
     });
 
     res.json({
       message: "Login successful",
-      user: { name: user.name, email: user.email ,role: user.role},
+      user: { name: user.name, email: user.email, role: user.role },
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -150,15 +154,13 @@ exports.logoutuser = async (req, res) => {
       return res.status(400).json({ message: "No token found" });
     }
 
-    // ✅ Hash token (better)
     const hashedToken = hashToken(token);
 
-    // ✅ Store in Redis with expiry
     await redis.set(hashedToken, "blacklisted", "EX", 60 * 60 * 24);
 
     res.clearCookie("jwt_token", {
       httpOnly: true,
-      secure: false,
+      secure: true,
       sameSite: "none",
       path: "/",
     });
@@ -185,7 +187,6 @@ exports.deleteUser = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
-
 
 exports.getMe = (req, res) => {
   res.json({
