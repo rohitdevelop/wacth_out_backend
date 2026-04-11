@@ -15,7 +15,7 @@ const FRONTEND_URL =
 
 app.use(
   cors({
-    origin: FRONTEND_URL,
+    origin: "https://wacth-out.vercel.app",
     credentials: true, // allow cookies
   })
 );
