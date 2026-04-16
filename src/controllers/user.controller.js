@@ -72,11 +72,7 @@ exports.signup = async (req, res) => {
 
     res.status(201).json({
       message: "Signup successful",
-      user: {
-        name: user.name,
-        email: user.email,
-        role: user.role,
-      },
+      user: user,
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -113,7 +109,7 @@ exports.login = async (req, res) => {
 
     res.json({
       message: "Login successful",
-      user: { name: user.name, email: user.email, role: user.role },
+      user: user,
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -188,8 +184,25 @@ exports.deleteUser = async (req, res) => {
   }
 };
 
-exports.getMe = (req, res) => {
-  res.json({
-    user: req.user,
-  });
+// edit profile
+
+exports.editProfile = async (req, res) => {
+  try {
+  } catch (error) {}
+};
+
+exports.getMe = async (req, res) => {
+  try {
+    const user = await userModel.findById(req.user.id).select("-password");
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    return res.status(200).json({
+      message: "User fetched successfully",
+      user,
+    });
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
 };

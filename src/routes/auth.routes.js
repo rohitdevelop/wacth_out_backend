@@ -10,6 +10,7 @@ const {
   deleteUser,
   logoutuser,
   getMe,
+  editProfile,
 } = require("../controllers/user.controller");
 const authMiddleware = require("../middleware/auth.middleware"); // JWT token middleware
 const role = require("../middleware/role.middleware");
@@ -20,6 +21,7 @@ authRouter.post("/signup", registerValidation, validate, signup);
 authRouter.post("/login", login);
 authRouter.get("/me", authMiddleware, getMe);
 authRouter.post("/address", authMiddleware, address);
+authRouter.patch("/edit", authMiddleware, editProfile);
 authRouter.post("/logoutuser", logoutuser);
 
 // its have to delete admin members
