@@ -26,6 +26,7 @@ const { body } = require( "express-validator");
     .not()
     .matches(/\s/)
     .withMessage("Password must not contain spaces"),
+
 ];
 
 module.exports = registerValidation

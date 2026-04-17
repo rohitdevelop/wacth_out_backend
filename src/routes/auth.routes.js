@@ -21,7 +21,7 @@ authRouter.post("/signup", registerValidation, validate, signup);
 authRouter.post("/login", login);
 authRouter.get("/me", authMiddleware, getMe);
 authRouter.post("/address", authMiddleware, address);
-authRouter.patch("/edit", authMiddleware, editProfile);
+authRouter.patch("/editProfile", authMiddleware, editProfile);
 authRouter.post("/logoutuser", logoutuser);
 
 // its have to delete admin members
