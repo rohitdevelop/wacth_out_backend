@@ -5,6 +5,8 @@ const { toFile } = require("@imagekit/nodejs");
   privateKey: process.env.IMAGEKIT_PRIVATE_KEY,
 });
 
+
+// Get all watches of a single user
 exports.sellWatches = async (req, res) => {
   try {
     const allWatches = await sellerModel.find({ user: req.user.id });
@@ -16,6 +18,23 @@ exports.sellWatches = async (req, res) => {
     }
  
     res.status(200).json({ message: "all wacthc done", allWatches });
+  } catch (error) {
+    res.status(500).json({ message: "server serror", error });
+  }
+};
+
+// get all watches of a all user
+exports.getAllWatches = async (req, res) => {
+  try {
+    const allWatches = await sellerModel.find();
+
+    if (!allWatches || allWatches.length === 0) {
+      return res.status(404).json({
+        message: "No watches found for sell",
+      });
+    }
+ 
+    res.status(200).json({ message: "all wacthes done", allWatches });
   } catch (error) {
     res.status(500).json({ message: "server serror", error });
   }
