@@ -141,6 +141,30 @@ exports.address = async (req, res) => {
   }
 };
 
+// 🔹 DELETE ADRESS
+exports.deleteAddress = async (req, res) => {
+  try {
+    const { addressId } = req.params;
+
+    const user = await userModel.findByIdAndUpdate(
+      req.user.id,
+      {
+        $pull: { address: { _id: addressId } },
+      },
+      { returnDocument: "after" },
+    );
+
+    res.json({
+      success: true,
+      message: "Address deleted successfully",
+      address: user.address,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: error.message });
+  }
+};
+
 // 🔹 LOGOUT
 exports.logoutuser = async (req, res) => {
   try {

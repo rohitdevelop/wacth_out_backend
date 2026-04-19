@@ -11,6 +11,7 @@ const {
   logoutuser,
   getMe,
   editProfile,
+  deleteAddress,
 } = require("../controllers/user.controller");
 const authMiddleware = require("../middleware/auth.middleware"); // JWT token middleware
 const role = require("../middleware/role.middleware");
@@ -22,6 +23,7 @@ authRouter.post("/signup", registerValidation, validate, signup);
 authRouter.post("/login", login);
 authRouter.get("/me",authMiddleware, getMe);
 authRouter.post("/address",authMiddleware, addressValidation,validate,  address);
+authRouter.delete("/address/:addressId", authMiddleware, deleteAddress);
 authRouter.patch("/editProfile", authMiddleware, editProfile);
 authRouter.post("/logoutuser", logoutuser);
 
