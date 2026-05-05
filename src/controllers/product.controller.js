@@ -66,6 +66,23 @@ exports.allproducts = async (req, res) => {
   }
 };
 
+exports.oneproducts = async (req, res) => {
+  try {
+    const oneproducts = await productModel.findById(req.params.id);
+
+    if (!oneproducts) {
+      return res.status(404).json({
+        message: "No watches found",
+      });
+    }
+
+    res.status(200).json({ message: "all products done", oneproducts });
+  } catch (error) {
+    res.status(500).json({ message: "server serror", error });
+  }
+};
+
+
 exports.deleteproducts = async (req, res) => {
   try {
     const { id } = req.params;

@@ -7,6 +7,7 @@ const upload = multer({ storage: multer.memoryStorage() });
 const {
   createproduct,
   allproducts,
+  oneproducts,
   deleteproducts,
   Editproducts
 } = require("../controllers/product.controller");
@@ -33,5 +34,7 @@ ProductRouter.patch(
   Editproducts,
 );
 ProductRouter.get("/allproducts", allproducts);
+
+ProductRouter.get("/oneproducts/:id", oneproducts);
 
 module.exports = ProductRouter;
